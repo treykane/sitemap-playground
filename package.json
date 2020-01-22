@@ -1,0 +1,22 @@
+{
+  "name": "sitemap-playground",
+  "version": "1.0.0",
+  "description": "Messing with the sitemap-generator package",
+  "main": "crawler.js",
+  "scripts": {
+    "test": "crawl"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/treykane/sitemap-playground.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/treykane/sitemap-playground/issues"
+  },
+  "homepage": "https://github.com/treykane/sitemap-playground#readme",
+  "dependencies": {
+    "sitemap-generator": "^8.4.2"
+  }
+}
