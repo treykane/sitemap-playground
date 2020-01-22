@@ -1,3 +1,4 @@
+// Using -- https://github.com/lgraubner/sitemap-generator
 const SitemapGenerator = require('sitemap-generator');
 
 const baseUrl = 'https://redbookjars.com'
