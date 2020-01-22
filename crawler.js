@@ -13,6 +13,7 @@ const generator = SitemapGenerator(baseUrl, {
     priorityMap: [1.0, 0.5, 0.2, 0],
     ignore: url => {
         // Prevent URLs from being added that contain `<pattern>`.
+        // https://stackoverflow.com/questions/30931079/validating-a-url-in-node-js/55585593
         return /<pattern>/g.test(url)
     }
 });
