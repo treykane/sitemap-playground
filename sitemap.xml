@@ -5,18 +5,6 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://treykane.com/_next/static/chunks/1806dabbd8a973c4.css</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://treykane.com/_next/static/chunks/66e740ca6616e195.css</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://treykane.com/_next/static/chunks/1a5a18d7a73d94fd.css</loc>
-    <priority>0.5</priority>
-  </url>
-  <url>
     <loc>https://treykane.com/posts/personal-llms-and-their-social-network</loc>
     <priority>0.5</priority>
   </url>
@@ -31,9 +19,5 @@
   <url>
     <loc>https://treykane.com/posts/rethinking-layout-with-css-logical-properties</loc>
     <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://treykane.com/_next/static/chunks/d78b298c2f578fb4.css</loc>
-    <priority>0.2</priority>
   </url>
 </urlset>

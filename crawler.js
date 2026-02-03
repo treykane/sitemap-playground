@@ -15,6 +15,13 @@ const options = {
   stripQuerystring: true,
   ignoreAMP: true,
   lastMod: true,
+  renderWithJs: true,
+  renderWaitUntil: 'networkidle',
+  renderTimeoutMs: 30000,
+  renderExpandAllDetails: true,
+  renderExpandAria: true,
+  renderExpandSelectors: [],
+  renderExpandWaitMs: 300,
   priorityMap: [1.0, 0.5, 0.2, 0],
   // Replace the regex with a real pattern to exclude URLs (e.g. /\/private\//i).
   ignore: (url) => {

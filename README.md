@@ -30,6 +30,13 @@ All configuration lives in `crawler.js`. The important fields are:
 - `stripQuerystring` removes `?query=...` from URLs before de-duplication.
 - `ignoreAMP` skips URLs that look like AMP variants.
 - `lastMod` adds a `lastmod` tag based on the `Last-Modified` header.
+- `renderWithJs` enables optional JS rendering via Playwright (see below).
+- `renderWaitUntil` controls Playwright’s load state (`networkidle` by default).
+- `renderTimeoutMs` sets Playwright’s navigation timeout (default: 30000).
+- `renderExpandAllDetails` forces all `<details>` elements open after render.
+- `renderExpandAria` clicks elements with `aria-expanded="false"` after render.
+- `renderExpandSelectors` is a list of CSS selectors to click for expansion.
+- `renderExpandWaitMs` waits after expansion to allow the DOM to settle.
 - `priorityMap` assigns priority by depth; values are clamped by the array length.
 - `ignore` lets you block URLs with a custom predicate (replace the regex placeholder).
 
@@ -48,7 +55,19 @@ The crawler is an `EventEmitter`. You can listen to:
 - `robots.txt` support is limited to `User-agent: *` `Disallow:` rules.
 - HTML parsing uses a regex to keep dependencies light; it is best-effort.
 - Redirects are followed up to 5 hops.
+- Asset URLs (CSS/JS/images/fonts/media and `/_next/`) are filtered out up front.
+- Non-HTML responses are never written to the sitemap.
 - `lastmod` is only written when a valid `Last-Modified` header exists.
+
+## Optional JS Rendering
+
+If your site relies on client-side rendering or hides links behind JavaScript-driven UI, enable JS rendering and install Playwright:
+
+```bash
+npm install playwright
+```
+
+Then set `renderWithJs: true` in `crawler.js`. When enabled, pages are rendered in a headless browser, expansion hooks can open common UI sections, and the final DOM is used for link extraction.
 
 ## Project Layout
 
