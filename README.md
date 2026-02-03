@@ -17,10 +17,11 @@ npm run crawl
 ```
 
 By default the sitemap is written to `./sitemap.xml` and overwritten on each run.
+You can pass a custom config path via `npm run crawl -- path/to/config.json`.
 
 ## Configuration
 
-All configuration lives in `crawler.js`. The important fields are:
+All configuration lives in `config.json`. The important fields are:
 
 - `baseUrl` is the starting point and origin boundary for the crawl.
 - `httpsAgent` is passed to Node’s HTTP client (defaults to `https.globalAgent`).
@@ -38,7 +39,8 @@ All configuration lives in `crawler.js`. The important fields are:
 - `renderExpandSelectors` is a list of CSS selectors to click for expansion.
 - `renderExpandWaitMs` waits after expansion to allow the DOM to settle.
 - `priorityMap` assigns priority by depth; values are clamped by the array length.
-- `ignore` lets you block URLs with a custom predicate (replace the regex placeholder).
+- `ignorePattern` lets you block URLs with a regex pattern string.
+- `ignoreFlags` sets regex flags (for example, `i` for case-insensitive).
 
 ## Events
 
@@ -67,11 +69,12 @@ If your site relies on client-side rendering or hides links behind JavaScript-dr
 npm install playwright
 ```
 
-Then set `renderWithJs: true` in `crawler.js`. When enabled, pages are rendered in a headless browser, expansion hooks can open common UI sections, and the final DOM is used for link extraction.
+Then set `renderWithJs` to `true` in `config.json`. When enabled, pages are rendered in a headless browser, expansion hooks can open common UI sections, and the final DOM is used for link extraction.
 
 ## Project Layout
 
-- `crawler.js` configures and starts the crawl.
+- `config.json` holds crawl configuration.
+- `crawler.js` loads the config and starts the crawl.
 - `lib/crawler.js` contains the crawler logic and event flow.
 - `lib/http.js` fetches pages and follows redirects.
 - `lib/robots.js` parses `robots.txt` disallow rules.
@@ -84,8 +87,9 @@ Common tweaks:
 
 - Change `baseUrl` to crawl a different site.
 - Set `maxDepth` to control the crawl scope.
-- Update `ignore` to exclude paths like admin pages or pagination.
+- Update `ignorePattern` to exclude paths like admin pages or pagination.
 - Adjust `maxEntriesPerFile` if you want smaller sitemap chunks.
+- Example `ignorePattern`: `/\\/private\\//` with `ignoreFlags` set to `i` to skip `/private/` URLs.
 
 ## Development Notes
 

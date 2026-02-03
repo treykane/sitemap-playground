@@ -1,33 +1,35 @@
+const fs = require('fs');
+const path = require('path');
 const https = require('https');
 const { SimpleSitemapCrawler } = require('./lib/crawler');
 
 /**
  * Entry point configuration for the crawler.
- * Update `baseUrl` and `options` to target a different site or crawl depth.
+ * Update `config.json` to target a different site or crawl depth.
  */
-const baseUrl = 'https://treykane.com';
+const configPath = process.argv[2]
+  ? path.resolve(process.argv[2])
+  : path.join(__dirname, 'config.json');
+const rawConfig = fs.readFileSync(configPath, 'utf8');
+const config = JSON.parse(rawConfig);
 
-const options = {
-  httpsAgent: https.globalAgent,
-  maxDepth: 2,
-  filepath: './sitemap.xml',
-  maxEntriesPerFile: 50000,
-  stripQuerystring: true,
-  ignoreAMP: true,
-  lastMod: true,
-  renderWithJs: true,
-  renderWaitUntil: 'networkidle',
-  renderTimeoutMs: 30000,
-  renderExpandAllDetails: true,
-  renderExpandAria: true,
-  renderExpandSelectors: [],
-  renderExpandWaitMs: 300,
-  priorityMap: [1.0, 0.5, 0.2, 0],
-  // Replace the regex with a real pattern to exclude URLs (e.g. /\/private\//i).
-  ignore: (url) => {
-    return /<pattern>/g.test(url);
-  }
-};
+const baseUrl = config.baseUrl;
+const options = { ...(config.options || {}) };
+
+if (options.httpsAgent === true || options.httpsAgent === 'global') {
+  options.httpsAgent = https.globalAgent;
+} else if (!options.httpsAgent) {
+  delete options.httpsAgent;
+}
+
+const ignorePattern = options.ignorePattern;
+const ignoreFlags = options.ignoreFlags || '';
+if (ignorePattern) {
+  const ignoreRegex = new RegExp(ignorePattern, ignoreFlags);
+  options.ignore = (url) => ignoreRegex.test(url);
+}
+delete options.ignorePattern;
+delete options.ignoreFlags;
 
 const crawler = new SimpleSitemapCrawler(baseUrl, options);
 
