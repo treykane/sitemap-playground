@@ -1,7 +1,8 @@
 // Using -- https://github.com/lgraubner/sitemap-generator
 const SitemapGenerator = require('sitemap-generator');
+const https = require('https');
 
-const baseUrl = 'https://redbookjars.com'
+const baseUrl = 'https://treykane.com'
 // create the sitemap generator
 const generator = SitemapGenerator(baseUrl, {
     httpsAgent: https.globalAgent,

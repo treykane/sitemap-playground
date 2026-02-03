@@ -4,7 +4,8 @@
   "description": "Messing with the sitemap-generator package",
   "main": "crawler.js",
   "scripts": {
-    "test": "crawl"
+    "crawl": "node crawler.js",
+    "test": "npm run crawl"
   },
   "repository": {
     "type": "git",
