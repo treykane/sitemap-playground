@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
-const { SimpleSitemapCrawler } = require('./lib/crawler');
+const { SimpleSiteCrawler } = require('./lib/crawler');
 
 /**
  * Entry point configuration for the crawler.
@@ -31,7 +31,7 @@ if (ignorePattern) {
 delete options.ignorePattern;
 delete options.ignoreFlags;
 
-const crawler = new SimpleSitemapCrawler(baseUrl, options);
+const crawler = new SimpleSiteCrawler(baseUrl, options);
 
 crawler.on('done', () => {
   console.log('SITEMAP CRAWL COMPLETE!');
