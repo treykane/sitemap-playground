@@ -1,78 +1,74 @@
 # Sitemap Playground
 
-This repo is a small Node.js script that crawls a site and writes a `sitemap.xml`
-using a built-in crawler (no external sitemap library).
+Sitemap Playground is a small Node.js crawler that walks a site and writes a `sitemap.xml` without relying on external sitemap libraries. It is intended to be easy to read, hack on, and reuse for one-off sitemap generation.
 
-## What It Does
+## Quick Start
 
-The script in `crawler.js`:
-
-- Sets a base URL (`https://treykane.com`).
-- Crawls that site (respecting `robots.txt` disallow rules for `*`).
-- Writes a sitemap to `./sitemap.xml`.
-- Splits into multiple sitemap files when the entry limit is exceeded.
-- Logs each URL as it is added.
-- Logs any URL that was ignored (robots or ignore rules).
-- Logs errors during crawling.
-
-## How It Works (Key Options)
-
-The crawler options in `crawler.js`:
-
-- `httpsAgent: https.globalAgent`
-  Uses Node's global HTTPS agent for requests (from the `https` module).
-- `maxDepth: 0`
-  Depth 0 means only the start URL is crawled (no following links).
-- `filepath: './sitemap.xml'`
-  Output path for the generated sitemap or sitemap index.
-- `maxEntriesPerFile: 50000`
-  Splits into multiple sitemap files if needed (creates a sitemap index at `filepath`).
-- `stripQuerystring: true`
-  Removes query strings from URLs.
-- `ignoreAMP: true`
-  Skips AMP URLs (simple path/query detection).
-- `lastMod: true`
-  Includes `lastmod` timestamps if available via the `Last-Modified` header.
-- `priorityMap: [1.0, 0.5, 0.2, 0]`
-  Priority by depth (from root to deeper pages).
-- `ignore: url => /<pattern>/g.test(url)`
-  Skip any URLs matching the provided pattern (replace `<pattern>` with your own).
-
-Event listeners:
-
-- `done` logs when the crawl finishes.
-- `add` logs each URL added to the sitemap.
-- `error` logs crawl errors.
-- `ignore` logs URLs skipped due to robots.txt or ignore rules.
-
-## Project Layout
-
-- `crawler.js` holds configuration and starts the crawl.
-- `lib/crawler.js` contains the crawler class and orchestration logic.
-- `lib/http.js` handles HTTP/HTTPS fetching with redirects.
-- `lib/robots.js` parses `robots.txt` disallow rules.
-- `lib/sitemap.js` writes sitemap files and indexes.
-- `lib/utils.js` includes link extraction and helpers.
-
-## Setup
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-## Run
+Run the crawler:
 
 ```bash
-node crawler.js
+npm run crawl
 ```
 
-Notes:
+By default the sitemap is written to `./sitemap.xml` and overwritten on each run.
 
-- `npm test` currently points to a `crawl` script, which runs the crawler.
-- The sitemap will be written to `./sitemap.xml` (overwritten each run).
+## Configuration
+
+All configuration lives in `crawler.js`. The important fields are:
+
+- `baseUrl` is the starting point and origin boundary for the crawl.
+- `httpsAgent` is passed to Node’s HTTP client (defaults to `https.globalAgent`).
+- `maxDepth` controls how far to follow links. `0` means only the start URL.
+- `filepath` is the output path for the sitemap or sitemap index.
+- `maxEntriesPerFile` splits large sitemaps into multiple files and writes an index.
+- `stripQuerystring` removes `?query=...` from URLs before de-duplication.
+- `ignoreAMP` skips URLs that look like AMP variants.
+- `lastMod` adds a `lastmod` tag based on the `Last-Modified` header.
+- `priorityMap` assigns priority by depth; values are clamped by the array length.
+- `ignore` lets you block URLs with a custom predicate (replace the regex placeholder).
+
+## Events
+
+The crawler is an `EventEmitter`. You can listen to:
+
+- `done` when the crawl finishes.
+- `add` for every URL added to the sitemap.
+- `ignore` for URLs skipped by robots or your ignore predicate.
+- `error` for HTTP or parsing failures.
+
+## Behavior Notes
+
+- Crawling is breadth-first and single-origin only.
+- `robots.txt` support is limited to `User-agent: *` `Disallow:` rules.
+- HTML parsing uses a regex to keep dependencies light; it is best-effort.
+- Redirects are followed up to 5 hops.
+- `lastmod` is only written when a valid `Last-Modified` header exists.
+
+## Project Layout
+
+- `crawler.js` configures and starts the crawl.
+- `lib/crawler.js` contains the crawler logic and event flow.
+- `lib/http.js` fetches pages and follows redirects.
+- `lib/robots.js` parses `robots.txt` disallow rules.
+- `lib/sitemap.js` writes sitemap XML and indexes.
+- `lib/utils.js` provides HTML link extraction and helpers.
 
 ## Customize
 
-- Change `baseUrl` in `crawler.js` to crawl a different site.
-- Update the `ignore` regex to exclude URLs you do not want in the sitemap.
-- Increase `maxDepth` to crawl deeper links.
+Common tweaks:
+
+- Change `baseUrl` to crawl a different site.
+- Set `maxDepth` to control the crawl scope.
+- Update `ignore` to exclude paths like admin pages or pagination.
+- Adjust `maxEntriesPerFile` if you want smaller sitemap chunks.
+
+## Development Notes
+
+- `npm test` runs the crawler via the `crawl` script.
+- The project intentionally avoids external dependencies to stay hackable.
