@@ -5,7 +5,7 @@ const baseUrl = 'https://treykane.com';
 
 const options = {
   httpsAgent: https.globalAgent,
-  maxDepth: 0,
+  maxDepth: 2,
   filepath: './sitemap.xml',
   maxEntriesPerFile: 50000,
   stripQuerystring: true,
