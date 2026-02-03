@@ -1,7 +1,7 @@
 {
   "name": "sitemap-playground",
   "version": "1.0.0",
-  "description": "Simple sitemap crawler without external dependencies",
+  "description": "Simple sitemap crawler application",
   "main": "crawler.js",
   "scripts": {
     "crawl": "node crawler.js",
