@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/treykane/sitemap-playground#readme",
   "dependencies": {
-    "sitemap-generator": "^8.5.0"
+    "sitemap-generator": "^7.5.2"
   }
 }

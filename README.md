@@ -1,7 +1,7 @@
 # Sitemap Playground
 
 This repo is a small Node.js script that crawls a site and writes a `sitemap.xml`
-using the `sitemap-generator` package.
+using the `sitemap-generator` package and Node's built-in `https` module.
 
 ## What It Does
 
@@ -19,7 +19,7 @@ The script in `crawler.js`:
 `SitemapGenerator(baseUrl, options)` is configured with:
 
 - `httpsAgent: https.globalAgent`  
-  Uses Node's global HTTPS agent for requests.
+  Uses Node's global HTTPS agent for requests (from the `https` module).
 - `maxDepth: 0`  
   Depth 0 means only the start URL is crawled (no following links).
 - `filepath: './sitemap.xml'`  
@@ -35,7 +35,7 @@ The script in `crawler.js`:
 - `priorityMap: [1.0, 0.5, 0.2, 0]`  
   Priority by depth (from root to deeper pages).
 - `ignore: url => /<pattern>/g.test(url)`  
-  Skip any URLs matching the provided pattern.
+  Skip any URLs matching the provided pattern (replace `<pattern>` with your own).
 
 Event listeners:
 
@@ -56,7 +56,10 @@ npm install
 node crawler.js
 ```
 
-After running, the sitemap will be written to `./sitemap.xml`.
+Notes:
+
+- `npm test` currently points to a non-existent `crawl` script, so it will fail.
+- The sitemap will be written to `./sitemap.xml` (overwritten each run).
 
 ## Customize
 
