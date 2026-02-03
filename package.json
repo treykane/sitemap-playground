@@ -1,7 +1,7 @@
 {
   "name": "sitemap-playground",
   "version": "1.0.0",
-  "description": "Messing with the sitemap-generator package",
+  "description": "Simple sitemap crawler without external dependencies",
   "main": "crawler.js",
   "scripts": {
     "crawl": "node crawler.js",
@@ -16,8 +16,5 @@
   "bugs": {
     "url": "https://github.com/treykane/sitemap-playground/issues"
   },
-  "homepage": "https://github.com/treykane/sitemap-playground#readme",
-  "dependencies": {
-    "sitemap-generator": "^7.5.2"
-  }
+  "homepage": "https://github.com/treykane/sitemap-playground#readme"
 }

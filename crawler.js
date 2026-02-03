@@ -1,46 +1,38 @@
-// Using -- https://github.com/lgraubner/sitemap-generator
-const SitemapGenerator = require('sitemap-generator');
 const https = require('https');
+const { SimpleSitemapCrawler } = require('./lib/crawler');
 
-const baseUrl = 'https://treykane.com'
-// create the sitemap generator
-const generator = SitemapGenerator(baseUrl, {
-    httpsAgent: https.globalAgent,
-    maxDepth: 0,
-    filepath: './sitemap.xml',
-    maxEntriesPerFile: 50000,
-    stripQuerystring: true,
-    ignoreAMP: true,
-    lastMod: true,
-    priorityMap: [1.0, 0.5, 0.2, 0],
-    ignore: url => {
-        // Prevent URLs from being added that contain `<pattern>`.
-        // https://stackoverflow.com/questions/30931079/validating-a-url-in-node-js/55585593
-        return /<pattern>/g.test(url)
-    }
+const baseUrl = 'https://treykane.com';
+
+const options = {
+  httpsAgent: https.globalAgent,
+  maxDepth: 0,
+  filepath: './sitemap.xml',
+  maxEntriesPerFile: 50000,
+  stripQuerystring: true,
+  ignoreAMP: true,
+  lastMod: true,
+  priorityMap: [1.0, 0.5, 0.2, 0],
+  ignore: (url) => {
+    return /<pattern>/g.test(url);
+  }
+};
+
+const crawler = new SimpleSitemapCrawler(baseUrl, options);
+
+crawler.on('done', () => {
+  console.log('SITEMAP CRAWL COMPLETE!');
 });
 
-
-// register event listeners
-generator.on('done', () => {
-    // sitemaps created
-    console.log('SITEMAP CRAWL COMPLETE!')
-  });
-
-  generator.on('add', (url) => {
-    // log url
-    console.log('Mapped: ', url)
-  });
-
-generator.on('error', (error) => {
-    // => { code: 404, message: 'Not found.', url: 'http://example.com/foo' }
-    console.log(error);
+crawler.on('add', (url) => {
+  console.log('Mapped: ', url);
 });
 
-generator.on('ignore', (url) => {
-    // log ignored url
-    console.log('Robots told me to ignore: ', url)
-  });
+crawler.on('error', (error) => {
+  console.log(error);
+});
 
-  // start the crawler
-  generator.start();
+crawler.on('ignore', (url) => {
+  console.log('Robots told me to ignore: ', url);
+});
+
+crawler.start();
