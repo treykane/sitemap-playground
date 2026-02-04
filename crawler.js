@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const { SimpleSiteCrawler } = require('./lib/crawler');
+const { displaySplash } = require('./lib/splash');
 
 /**
  * Entry point configuration for the crawler.
@@ -32,6 +33,8 @@ delete options.ignorePattern;
 delete options.ignoreFlags;
 
 const crawler = new SimpleSiteCrawler(baseUrl, options);
+
+displaySplash();
 
 crawler.on('done', () => {
   console.log('SITEMAP CRAWL COMPLETE!');
