@@ -4,7 +4,6 @@
     "httpsAgent": "global",
     "maxDepth": 2,
     "filepath": "./sitemap.xml",
-    "maxEntriesPerFile": 50000,
     "stripQuerystring": true,
     "ignoreAMP": true,
     "lastMod": true,

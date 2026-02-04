@@ -27,7 +27,6 @@ All configuration lives in `config.json`. The important fields are:
 - `httpsAgent` is passed to Node’s HTTP client (defaults to `https.globalAgent`).
 - `maxDepth` controls how far to follow links. `0` means only the start URL.
 - `filepath` is the output path for the sitemap or sitemap index.
-- `maxEntriesPerFile` splits large sitemaps into multiple files and writes an index.
 - `stripQuerystring` removes `?query=...` from URLs before de-duplication.
 - `ignoreAMP` skips URLs that look like AMP variants.
 - `lastMod` adds a `lastmod` tag based on the `Last-Modified` header.
@@ -48,13 +47,12 @@ The crawler is an `EventEmitter`. You can listen to:
 
 - `done` when the crawl finishes.
 - `add` for every URL added to the sitemap.
-- `ignore` for URLs skipped by robots or your ignore predicate.
+- `ignore` for URLs skipped by your ignore predicate.
 - `error` for HTTP or parsing failures.
 
 ## Behavior Notes
 
 - Crawling is breadth-first and single-origin only.
-- `robots.txt` support is limited to `User-agent: *` `Disallow:` rules.
 - HTML parsing uses a regex to keep dependencies light; it is best-effort.
 - Redirects are followed up to 5 hops.
 - Asset URLs (CSS/JS/images/fonts/media and `/_next/`) are filtered out up front.
@@ -77,7 +75,6 @@ Then set `renderWithJs` to `true` in `config.json`. When enabled, pages are rend
 - `crawler.js` loads the config and starts the crawl.
 - `lib/crawler.js` contains the crawler logic and event flow.
 - `lib/http.js` fetches pages and follows redirects.
-- `lib/robots.js` parses `robots.txt` disallow rules.
 - `lib/sitemap.js` writes sitemap XML and indexes.
 - `lib/utils.js` provides HTML link extraction and helpers.
 
