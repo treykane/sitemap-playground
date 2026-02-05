@@ -90,5 +90,22 @@ Common tweaks:
 
 ## Development Notes
 
-- `npm test` runs the crawler via the `crawl` script.
+- `npm test` runs the test suite using Node.js built-in test runner.
+- `npm run crawl` executes the crawler to generate a sitemap.
 - The project intentionally avoids external dependencies to stay hackable.
+
+## Testing
+
+The project includes a comprehensive test suite covering:
+- URL normalization and filtering
+- HTML link extraction
+- Sitemap XML generation
+- HTTP request handling and redirects
+- Crawler configuration and behavior
+
+Run tests with:
+```bash
+npm test
+```
+
+See `test/README.md` for more details on the testing infrastructure.
