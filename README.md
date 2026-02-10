@@ -1,111 +1,148 @@
 # Sitemap Playground
 
-Sitemap Playground is a small Node.js crawler that walks a site and writes a `sitemap.xml` without relying on external sitemap libraries. It is intended to be easy to read, hack on, and reuse for one-off sitemap generation.
+A lightweight Node.js crawler that walks your site and generates a `sitemap.xml` — no external sitemap libraries required. Designed to be readable, hackable, and easy to reuse for one-off sitemap generation.
 
-## Quick Start
+---
 
-Install dependencies:
+## Getting Started
+
+**1. Install dependencies:**
 
 ```bash
 npm install
 ```
 
-Run the crawler:
+**2. Update `config.json`** with your site's URL and desired settings (see [Configuration](#configuration) below).
+
+**3. Run the crawler:**
 
 ```bash
 npm run crawl
 ```
 
-By default the sitemap is written to `./sitemap.xml` and overwritten on each run.
-You can pass a custom config path via `npm run crawl -- path/to/config.json`.
+The sitemap is written to `./sitemap.xml` by default and overwritten on each run.
+
+> **Tip:** Pass a custom config path with `npm run crawl -- path/to/config.json`
+
+---
 
 ## Configuration
 
-All configuration lives in `config.json`. The important fields are:
+All settings live in `config.json`.
 
-- `baseUrl` is the starting point and origin boundary for the crawl.
-- `httpsAgent` is passed to Node’s HTTP client (defaults to `https.globalAgent`).
-- `maxDepth` controls how far to follow links. `0` means only the start URL.
-- `filepath` is the output path for the sitemap or sitemap index.
-- `stripQuerystring` removes `?query=...` from URLs before de-duplication.
-- `ignoreAMP` skips URLs that look like AMP variants.
-- `lastMod` adds a `lastmod` tag based on the `Last-Modified` header.
-- `renderWithJs` enables optional JS rendering via Playwright (see below).
-- `renderWaitUntil` controls Playwright’s load state (`networkidle` by default).
-- `renderTimeoutMs` sets Playwright’s navigation timeout (default: 30000).
-- `renderExpandAllDetails` forces all `<details>` elements open after render.
-- `renderExpandAria` clicks elements with `aria-expanded="false"` after render.
-- `renderExpandSelectors` is a list of CSS selectors to click for expansion.
-- `renderExpandWaitMs` waits after expansion to allow the DOM to settle.
-- `priorityMap` assigns priority by depth; values are clamped by the array length.
-- `ignorePattern` lets you block URLs with a regex pattern string.
-- `ignoreFlags` sets regex flags (for example, `i` for case-insensitive).
+### Core Settings
 
-## Events
+| Field              | Description                                                        | Default            |
+| ------------------ | ------------------------------------------------------------------ | ------------------ |
+| `baseUrl`          | Starting URL and origin boundary for the crawl.                    | —                  |
+| `maxDepth`         | How many levels deep to follow links. `0` = start URL only.       | —                  |
+| `filepath`         | Output path for the sitemap or sitemap index.                      | `./sitemap.xml`    |
+| `maxEntriesPerFile`| Max entries per sitemap file before splitting into an index.       | —                  |
 
-The crawler is an `EventEmitter`. You can listen to:
+### URL Filtering
 
-- `done` when the crawl finishes.
-- `add` for every URL added to the sitemap.
-- `ignore` for URLs skipped by your ignore predicate.
-- `error` for HTTP or parsing failures.
+| Field              | Description                                                        | Default            |
+| ------------------ | ------------------------------------------------------------------ | ------------------ |
+| `stripQuerystring` | Remove `?query=...` from URLs before de-duplication.               | `false`            |
+| `ignoreAMP`        | Skip URLs that look like AMP variants.                             | `false`            |
+| `ignorePattern`    | Regex pattern string to block matching URLs.                       | —                  |
+| `ignoreFlags`      | Regex flags for `ignorePattern` (e.g. `"i"` for case-insensitive).| —                  |
 
-## Behavior Notes
+> **Example:** To skip all `/private/` URLs, set `ignorePattern` to `"\\/private\\/"` and `ignoreFlags` to `"i"`.
 
-- Crawling is breadth-first and single-origin only.
-- HTML parsing uses a regex to keep dependencies light; it is best-effort.
-- Redirects are followed up to 5 hops.
-- Asset URLs (CSS/JS/images/fonts/media and `/_next/`) are filtered out up front.
-- Non-HTML responses are never written to the sitemap.
-- `lastmod` is only written when a valid `Last-Modified` header exists.
+### Sitemap Output
 
-## Optional JS Rendering
+| Field              | Description                                                        | Default            |
+| ------------------ | ------------------------------------------------------------------ | ------------------ |
+| `lastMod`          | Add `<lastmod>` tags using the `Last-Modified` response header.    | `false`            |
+| `priorityMap`      | Array assigning priority by depth (values clamped by array length).| —                  |
 
-If your site relies on client-side rendering or hides links behind JavaScript-driven UI, enable JS rendering and install Playwright:
+### JS Rendering (Optional)
+
+Enable these if your site relies on client-side rendering or hides links behind JavaScript-driven UI.
+
+| Field                    | Description                                                    | Default          |
+| ------------------------ | -------------------------------------------------------------- | ---------------- |
+| `renderWithJs`           | Enable headless browser rendering via Playwright.              | `false`          |
+| `renderWaitUntil`        | Playwright load state to wait for.                             | `"networkidle"`  |
+| `renderTimeoutMs`        | Playwright navigation timeout in milliseconds.                 | `30000`          |
+| `renderExpandAllDetails` | Force all `<details>` elements open after render.              | `false`          |
+| `renderExpandAria`       | Click elements with `aria-expanded="false"` after render.      | `false`          |
+| `renderExpandSelectors`  | List of CSS selectors to click for expansion.                  | `[]`             |
+| `renderExpandWaitMs`     | Time (ms) to wait after expansion for the DOM to settle.       | —                |
+
+To use JS rendering, install Playwright separately:
 
 ```bash
 npm install playwright
 ```
 
-Then set `renderWithJs` to `true` in `config.json`. When enabled, pages are rendered in a headless browser, expansion hooks can open common UI sections, and the final DOM is used for link extraction.
+### Advanced
+
+| Field         | Description                                              | Default                |
+| ------------- | -------------------------------------------------------- | ---------------------- |
+| `httpsAgent`  | Passed to Node's HTTP client.                            | `https.globalAgent`    |
+
+---
+
+## Events
+
+The crawler is an `EventEmitter`. Listen to these events for custom integrations:
+
+| Event    | Emitted when…                                |
+| -------- | -------------------------------------------- |
+| `add`    | A URL is added to the sitemap.               |
+| `ignore` | A URL is skipped by your ignore rules.       |
+| `error`  | An HTTP or parsing failure occurs.           |
+| `done`   | The crawl finishes.                          |
+
+---
+
+## How It Works
+
+- **Breadth-first, single-origin crawl** — only follows links within the `baseUrl` origin.
+- **Regex-based HTML parsing** — keeps dependencies minimal (best-effort extraction).
+- **Redirects** are followed up to 5 hops.
+- **Asset URLs** (CSS, JS, images, fonts, media, and `/_next/`) are automatically filtered out.
+- **Non-HTML responses** are never written to the sitemap.
+- **`<lastmod>`** is only written when the server returns a valid `Last-Modified` header.
+
+---
 
 ## Project Layout
 
-- `config.json` holds crawl configuration.
-- `crawler.js` loads the config and starts the crawl.
-- `lib/crawler.js` contains the crawler logic and event flow.
-- `lib/http.js` fetches pages and follows redirects.
-- `lib/sitemap.js` writes sitemap XML and indexes.
-- `lib/utils.js` provides HTML link extraction and helpers.
+```text
+config.json        Crawl configuration
+crawler.js         Entry point — loads config and starts the crawl
+lib/
+  crawler.js       Core crawler logic and event flow
+  http.js          Page fetching and redirect handling
+  sitemap.js       Sitemap XML and index writing
+  utils.js         HTML link extraction and helpers
+test/
+  README.md        Testing infrastructure details
+```
 
-## Customize
-
-Common tweaks:
-
-- Change `baseUrl` to crawl a different site.
-- Set `maxDepth` to control the crawl scope.
-- Update `ignorePattern` to exclude paths like admin pages or pagination.
-- Adjust `maxEntriesPerFile` if you want smaller sitemap chunks.
-- Example `ignorePattern`: `/\\/private\\//` with `ignoreFlags` set to `i` to skip `/private/` URLs.
-
-## Development Notes
-
-- `npm test` runs the test suite using Node.js built-in test runner.
-- `npm run crawl` executes the crawler to generate a sitemap.
-- The project intentionally avoids external dependencies to stay hackable.
+---
 
 ## Testing
 
-The project includes a comprehensive test suite covering:
-- URL normalization and filtering
-- HTML link extraction
-- Sitemap XML generation
-- HTTP request handling and redirects
-- Crawler configuration and behavior
+Run the test suite (uses Node.js built-in test runner):
 
-Run tests with:
 ```bash
 npm test
 ```
 
-See `test/README.md` for more details on the testing infrastructure.
+Tests cover URL normalization, HTML link extraction, sitemap XML generation, HTTP handling, and crawler configuration. See `test/README.md` for details.
+
+---
+
+## Common Customizations
+
+| What you want to do                        | What to change                                            |
+| ------------------------------------------ | --------------------------------------------------------- |
+| Crawl a different site                     | Update `baseUrl`                                          |
+| Limit crawl depth                          | Set `maxDepth`                                            |
+| Exclude specific paths (e.g. admin, pagination) | Add an `ignorePattern` with optional `ignoreFlags`   |
+| Split large sitemaps into smaller files    | Adjust `maxEntriesPerFile`                                |
+| Handle a JS-rendered site                  | Set `renderWithJs` to `true` and install Playwright       |
